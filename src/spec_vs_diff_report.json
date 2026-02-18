@@ -1,15 +1,12 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T12:14:40.103Z",
-  "summary": "Diff shows MiningHub plan PDF copy and plan content moved/updated to Hindi, and a new Hindi crypto-mining explainer section added to the single-source-of-truth content and (per generator logic) included in PDF generation with page-break handling.",
+  "generatedAt": "2026-02-18T12:19:15.869Z",
+  "summary": "The diff only modifies `project_state.json` (project metadata). The BuildRequest contains no explicit requirements or acceptance criteria, and there is no evidence of functional code changes related to the PDF or UI components.",
   "missing_requirements": [],
   "hallucinated_features": [],
   "confidence": 0.62,
   "changed_files": [
-    "frontend-file-summaries.txt",
-    "frontend/src/content/mininghubPlan.ts",
-    "frontend/src/features/pdf/generateMiningHubPlanPdf.ts",
     "project_state.json"
   ]
 }

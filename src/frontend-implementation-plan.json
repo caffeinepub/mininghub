@@ -1,49 +1,6 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "MiningHub PDF: Hindi localization + crypto mining explainer section",
-  "requirements": [
-    {
-      "id": "REQ-5",
-      "summary": "Localize the generated MiningHub investment plan PDF content to Hindi (all headings, labels, paragraphs, and footer strings) while keeping the existing layout stable.",
-      "acceptanceCriteria": [
-        "Generating and downloading the PDF produces a document where all section titles and descriptive text are in Hindi (numbers/currency values may remain numeric like $20, $0.60).",
-        "No English-only headings remain in the PDF (e.g., 'About MiningHub', 'Investment Package', 'Referral System', 'Generated from MiningHub Investment Plan').",
-        "The PDF generation completes successfully with the existing layout and does not throw runtime errors."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/content/mininghubPlan.ts",
-          "operation": "modify",
-          "description": "Translate all user-visible plan copy used by the PDF into Hindi (tagline, description, services, benefits, deposit/withdrawal strings, etc.), and introduce a single-source-of-truth Hindi copy object for PDF section titles/labels/footer text so the PDF generator does not hardcode English strings."
-        },
-        {
-          "path": "frontend/src/features/pdf/generateMiningHubPlanPdf.ts",
-          "operation": "modify",
-          "description": "Update PDF generation to exclusively use the centralized Hindi copy from frontend/src/content/mininghubPlan.ts for all headings/labels/paragraphs/footer strings (remove remaining hardcoded English strings), preserving existing styling, spacing, and page-break behavior."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Add a dedicated Hindi section in the PDF that explains what crypto mining is and how it works, sourced from centralized plan content and respecting page breaks.",
-      "acceptanceCriteria": [
-        "The generated PDF includes a clearly labeled Hindi section explaining (1) what crypto mining is and (2) how it works at a high level (e.g., verification/consensus, hashing, rewards), written as readable paragraphs and/or bullet points.",
-        "The new section is included in the PDF consistently on every generation and respects page-break handling (no overlapping text; it flows onto a new page if needed).",
-        "The new section’s Hindi content is maintained as part of the single source of truth plan content (not scattered hard-coded across multiple components)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/content/mininghubPlan.ts",
-          "operation": "modify",
-          "description": "Add a new Hindi crypto-mining explainer section to the plan content as the single source of truth (e.g., section title + paragraph text and/or bullet points describing what mining is and how it works)."
-        },
-        {
-          "path": "frontend/src/features/pdf/generateMiningHubPlanPdf.ts",
-          "operation": "modify",
-          "description": "Insert rendering for the new crypto mining explainer section as its own clearly titled section in the PDF, using the centralized Hindi content and the existing page-break helper to ensure clean flow across pages."
-        }
-      ]
-    }
-  ]
+  "title": "MiningHub PDF crypto mining explainer section (no-op: already implemented)",
+  "requirements": []
 }
