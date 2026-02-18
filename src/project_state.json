@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Create a professional PDF document for the MiningHub investment plan/platform, with the PDF text in Hindi, including package details, ROI/level income, referral/team rewards, deposit/withdrawal tracking info, user benefits, an income calculator section, an added section explaining what crypto mining is and how it works, and relevant photos.",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-a-frontend-page-that-generates-and-lets-the-user-download-a-final-professionally-formatted-pdf-document-for-the-mininghub-investment-plan-using-the-exact-plan-details-provided-single-20-package-0-60-daily-credit-direct-referral-team-rewards-level-income-deposit-withdrawal-tracking-benefits-and-income-calculator-all-pdf-text-must-be-in-english",
+      "title": "Create a frontend page that generates and lets the user download a final, professionally formatted PDF document for the “MiningHub” investment plan using the exact plan details provided (single $20 package, $0.60 daily credit, direct referral, team rewards, level income, deposit/withdrawal tracking, benefits, and income calculator). All PDF text must be in English.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-include-two-relevant-images-in-the-pdf-layout-one-representing-crypto-mining-and-one-representing-blockchain-development-using-locally-bundled-static-assets-not-fetched-at-runtime",
+      "title": "Include two relevant images in the PDF layout: one representing crypto mining and one representing blockchain development, using locally bundled static assets (not fetched at runtime).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-coherent-visual-theme-across-the-mininghub-pdf-generator-page-colors-typography-spacing-and-layout-appropriate-for-a-finance-tech-document-avoiding-a-blue-purple-dominant-palette",
+      "title": "Apply a coherent visual theme across the MiningHub PDF generator page (colors, typography, spacing, and layout) appropriate for a finance/tech document, avoiding a blue/purple dominant palette.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-the-mininghub-plan-content-as-a-single-source-of-truth-in-the-frontend-e-g-a-typed-constants-file-so-the-pdf-content-is-not-hard-coded-across-multiple-components-and-is-easy-to-update",
+      "title": "Persist the MiningHub plan content as a single source of truth in the frontend (e.g., a typed constants file) so the PDF content is not hard-coded across multiple components and is easy to update.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-mininghub-investment-plan-pdf-content-language-from-english-to-hindi-by-updating-all-user-visible-headings-labels-paragraphs-and-footer-strings-in-the-pdf-output-including-sections-such-as-about-what-we-do-benefits-investment-package-referral-system-level-income-team-rewards-deposit-withdrawal-and-income-calculator",
+      "title": "Change the MiningHub investment plan PDF content language from English to Hindi by updating all user-visible headings, labels, paragraphs, and footer strings in the PDF output (including sections such as About, What We Do, Benefits, Investment Package, Referral System, Level Income, Team Rewards, Deposit & Withdrawal, and Income Calculator).",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-section-to-the-mininghub-plan-pdf-that-explains-what-crypto-mining-is-and-how-it-works-with-the-section-content-written-in-hindi-and-placed-as-a-dedicated-clearly-titled-section-in-the-pdf",
+      "title": "Add a new section to the MiningHub plan PDF that explains what crypto mining is and how it works, with the section content written in Hindi and placed as a dedicated, clearly titled section in the PDF.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Generate final MiningHub investment plan PDF including all provided plan details (package, ROI/level income, referral, team rewards, deposit/withdrawal tracking, benefits, income calculator).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add crypto mining and blockchain development photos/images into the PDF layout.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Change the MiningHub PDF document text language to Hindi.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Add a section to the PDF explaining what crypto mining is and how it works.",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "MiningHub",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

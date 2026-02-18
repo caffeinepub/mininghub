@@ -1,0 +1,43 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-change-the-mininghub-investment-plan-pdf-content-language-from-english-to-hindi-by-updating-all-user-visible-headings-labels-paragraphs-and-footer-strings-in-the-pdf-output-including-sections-such-as-about-what-we-do-benefits-investment-package-referral-system-level-income-team-rewards-deposit-withdrawal-and-income-calculator",
+      "featureTitle": "Change the MiningHub investment plan PDF content language from English to Hindi by updating all user-visible headings, labels, paragraphs, and footer strings in the PDF output (including sections such as About, What We Do, Benefits, Investment Package, Referral System, Level Income, Team Rewards, Deposit & Withdrawal, and Income Calculator).",
+      "files": [
+        "frontend/src/content/mininghubPlan.ts",
+        "frontend/src/features/pdf/generateMiningHubPlanPdf.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-new-section-to-the-mininghub-plan-pdf-that-explains-what-crypto-mining-is-and-how-it-works-with-the-section-content-written-in-hindi-and-placed-as-a-dedicated-clearly-titled-section-in-the-pdf",
+      "featureTitle": "Add a new section to the MiningHub plan PDF that explains what crypto mining is and how it works, with the section content written in Hindi and placed as a dedicated, clearly titled section in the PDF.",
+      "files": [
+        "frontend/src/content/mininghubPlan.ts",
+        "frontend/src/features/pdf/generateMiningHubPlanPdf.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

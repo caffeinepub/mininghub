@@ -1,0 +1,58 @@
+{
+  "kind": "build_request",
+  "title": "Switch MiningHub PDF content to Hindi and add crypto mining explainer section",
+  "projectName": "MiningHub",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-5",
+      "text": "Change the MiningHub investment plan PDF content language from English to Hindi by updating all user-visible headings, labels, paragraphs, and footer strings in the PDF output (including sections such as About, What We Do, Benefits, Investment Package, Referral System, Level Income, Team Rewards, Deposit & Withdrawal, and Income Calculator).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Hindi me text rhega"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generating and downloading the PDF produces a document where all section titles and descriptive text are in Hindi (numbers/currency values may remain numeric like $20, $0.60).",
+        "No English-only headings remain in the PDF (e.g., 'About MiningHub', 'Investment Package', 'Referral System', 'Generated from MiningHub Investment Plan').",
+        "The PDF generation completes successfully with the existing layout and does not throw runtime errors."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add a new section to the MiningHub plan PDF that explains what crypto mining is and how it works, with the section content written in Hindi and placed as a dedicated, clearly titled section in the PDF.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Aur crypto mining kya hota hai kaise hota hai ye bhi add karo"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The generated PDF includes a clearly labeled Hindi section explaining (1) what crypto mining is and (2) how it works at a high level (e.g., verification/consensus, hashing, rewards), written as readable paragraphs and/or bullet points.",
+        "The new section is included in the PDF consistently on every generation and respects page-break handling (no overlapping text; it flows onto a new page if needed).",
+        "The new section’s Hindi content is maintained as part of the single source of truth plan content (not scattered hard-coded across multiple components)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not edit any files under frontend/src/components/ui (compose these components only).",
+    "Do not modify immutable paths listed in SYSTEM_CONTEXT (e.g., frontend/src/main.tsx, frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts).",
+    "Backend remains a single-actor Motoko canister; no backend changes are required for this request."
+  ],
+  "nonGoals": [
+    "Adding new backend storage, admin panels, or dynamic CMS editing for plan text.",
+    "Changing or adding additional investment packages beyond the existing single $20 package.",
+    "Adding new authentication providers beyond Internet Identity."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

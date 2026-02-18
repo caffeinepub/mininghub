@@ -1,0 +1,13 @@
+{
+  "frontend/src/App.tsx": "Main application component that renders the MiningHub PDF generator page as the primary view.",
+  "frontend/src/pages/MiningHubPdfGeneratorPage.tsx": "Complete PDF generator page with investment plan preview, download functionality, and comprehensive display of all MiningHub features including package details, referral system, level income, team rewards, and income calculator.",
+  "frontend/src/content/mininghubPlan.ts": "Centralized typed data structure containing all MiningHub investment plan details in Hindi, including a new crypto mining explainer section and PDF-specific copy for all labels and headings.",
+  "frontend/src/features/calculator/incomeCalculator.ts": "Income calculation utilities for computing monthly earnings from daily credits and total potential income including team rewards.",
+  "frontend/src/features/pdf/loadPdfImageAssets.ts": "Image loading utilities that convert local static assets to base64 data URLs for embedding into the generated PDF.",
+  "frontend/src/features/pdf/generateMiningHubPlanPdf.ts": "Core PDF generation logic using jsPDF that creates a professionally formatted multi-section investment plan document in Hindi with a new crypto mining explainer section, embedded images, tables, and consistent typography.",
+  "frontend/src/features/pdf/downloadPdf.ts": "Browser download helper that triggers PDF file download from a Blob using a stable filename.",
+  "frontend/src/hooks/useQueries.ts": "Empty placeholder file for React Query hooks (no backend queries needed for this client-side PDF generator).",
+  "frontend/src/index.css": "Global styles with OKLCH color system using a professional green/teal palette (non-blue/purple) suitable for finance/tech applications, with Inter font family.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with Inter font family and custom design tokens matching the professional finance/tech theme.",
+  "frontend/index.html": "HTML entry point with jsPDF CDN script, Inter font from Google Fonts, and SEO meta tags for the MiningHub application."
+}
