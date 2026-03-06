@@ -11,8 +11,8 @@ export function calculateMonthlyIncome(dailyCredit: number): number {
  */
 export function calculateTotalMonthlyIncome(
   dailyCredit: number,
-  teamReward: number = 0,
-  levelIncome: number = 0
+  teamReward = 0,
+  levelIncome = 0,
 ): number {
   const baseMonthly = calculateMonthlyIncome(dailyCredit);
   return Number((baseMonthly + teamReward + levelIncome).toFixed(2));

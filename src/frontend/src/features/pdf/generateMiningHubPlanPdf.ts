@@ -1,435 +1,400 @@
-import { miningHubPlan } from '@/content/mininghubPlan';
-import { calculateMonthlyIncome } from '@/features/calculator/incomeCalculator';
-import { loadPdfImageAssets } from './loadPdfImageAssets';
+import { miningHubPlan } from "@/content/mininghubPlan";
+import { loadPdfImageAssets } from "./loadPdfImageAssets";
 
 declare global {
   interface Window {
-    jspdf: {
-      jsPDF: new (orientation?: string, unit?: string, format?: string) => JsPDFDocument;
+    jspdf?: {
+      jsPDF: new (options?: any) => any;
     };
   }
-}
-
-interface JsPDFDocument {
-  text(text: string | string[], x: number, y: number, options?: { maxWidth?: number }): void;
-  setFontSize(size: number): void;
-  setFont(fontName: string, fontStyle?: string): void;
-  setTextColor(r: number, g: number, b: number): void;
-  setDrawColor(r: number, g: number, b: number): void;
-  setFillColor(r: number, g: number, b: number): void;
-  addImage(
-    imageData: string,
-    format: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ): void;
-  addPage(): void;
-  rect(x: number, y: number, width: number, height: number, style?: string): void;
-  line(x1: number, y1: number, x2: number, y2: number): void;
-  output(type: string): Blob;
-  internal: {
-    pageSize: {
-      getWidth(): number;
-      getHeight(): number;
-    };
-  };
 }
 
 export async function generateMiningHubPlanPdf(): Promise<Blob> {
-  // Check if jsPDF is loaded
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    throw new Error('jsPDF library not loaded. Please refresh the page and try again.');
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p', 'mm', 'a4');
-
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 20;
-  const contentWidth = pageWidth - 2 * margin;
-
-  let yPos = margin;
-
-  // Load images
-  let images: { cryptoMiningImage: string; blockchainDevImage: string } | null = null;
-  try {
-    images = await loadPdfImageAssets();
-  } catch (error) {
-    console.warn('Failed to load images, continuing without them:', error);
-  }
-
-  // Helper function to add new page if needed
-  const checkPageBreak = (requiredSpace: number) => {
-    if (yPos + requiredSpace > pageHeight - margin) {
-      doc.addPage();
-      yPos = margin;
-      return true;
-    }
-    return false;
-  };
-
-  // Title
-  doc.setFontSize(28);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 139, 34); // Forest green
-  doc.text(miningHubPlan.name, margin, yPos);
-  yPos += 10;
-
-  // Tagline
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(100, 100, 100);
-  doc.text(miningHubPlan.tagline, margin, yPos);
-  yPos += 15;
-
-  // Add crypto mining image if available
-  if (images?.cryptoMiningImage) {
-    checkPageBreak(60);
-    try {
-      doc.addImage(images.cryptoMiningImage, 'PNG', margin, yPos, contentWidth, 50);
-      yPos += 55;
-    } catch (error) {
-      console.warn('Failed to add crypto mining image:', error);
-    }
-  }
-
-  // About Section
-  checkPageBreak(40);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.aboutTitle, margin, yPos);
-  yPos += 8;
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-  const descLines = doc.text(miningHubPlan.description, margin, yPos, { maxWidth: contentWidth }) as any;
-  yPos += 20;
-
-  // Services
-  checkPageBreak(30);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.servicesTitle, margin, yPos);
-  yPos += 7;
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  miningHubPlan.services.forEach((service) => {
-    checkPageBreak(7);
-    doc.setTextColor(34, 139, 34);
-    doc.text('•', margin + 2, yPos);
-    doc.setTextColor(60, 60, 60);
-    doc.text(service, margin + 7, yPos);
-    yPos += 6;
-  });
-  yPos += 5;
-
-  // Benefits
-  checkPageBreak(30);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.benefitsTitle, margin, yPos);
-  yPos += 7;
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  miningHubPlan.benefits.forEach((benefit) => {
-    checkPageBreak(7);
-    doc.setTextColor(34, 139, 34);
-    doc.text('•', margin + 2, yPos);
-    doc.setTextColor(60, 60, 60);
-    doc.text(benefit, margin + 7, yPos);
-    yPos += 6;
-  });
-  yPos += 10;
-
-  // Add blockchain dev image if available
-  if (images?.blockchainDevImage) {
-    checkPageBreak(60);
-    try {
-      doc.addImage(images.blockchainDevImage, 'PNG', margin, yPos, contentWidth, 50);
-      yPos += 55;
-    } catch (error) {
-      console.warn('Failed to add blockchain dev image:', error);
-    }
-  }
-
-  // Crypto Mining Explainer Section
-  checkPageBreak(80);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 139, 34);
-  doc.text(miningHubPlan.cryptoMiningExplainer.title, margin, yPos);
-  yPos += 10;
-
-  // What is Mining
-  checkPageBreak(40);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.cryptoMiningExplainer.whatIsMining.title, margin, yPos);
-  yPos += 7;
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-  const miningDescLines = doc.text(
-    miningHubPlan.cryptoMiningExplainer.whatIsMining.content,
-    margin,
-    yPos,
-    { maxWidth: contentWidth }
-  ) as any;
-  yPos += 25;
-
-  // How it Works
-  checkPageBreak(50);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.cryptoMiningExplainer.howItWorks.title, margin, yPos);
-  yPos += 7;
-
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  miningHubPlan.cryptoMiningExplainer.howItWorks.points.forEach((point) => {
-    checkPageBreak(10);
-    doc.setTextColor(34, 139, 34);
-    doc.text('•', margin + 2, yPos);
-    doc.setTextColor(60, 60, 60);
-    const pointLines = doc.text(point, margin + 7, yPos, { maxWidth: contentWidth - 10 }) as any;
-    yPos += 7;
-  });
-  yPos += 10;
-
-  // Investment Package
-  checkPageBreak(50);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.packageTitle, margin, yPos);
-  yPos += 10;
-
-  // Package box
-  doc.setFillColor(240, 248, 255);
-  doc.rect(margin, yPos, contentWidth, 30, 'F');
-  doc.setDrawColor(34, 139, 34);
-  doc.rect(margin, yPos, contentWidth, 30);
-
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.packageLabels.singlePackage, margin + 5, yPos + 8);
-  doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 139, 34);
-  doc.text(`$${miningHubPlan.package.amount}`, margin + 5, yPos + 18);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.packageLabels.dailyCredit, margin + 70, yPos + 8);
-  doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 139, 34);
-  doc.text(`$${miningHubPlan.package.dailyCredit}`, margin + 70, yPos + 18);
-
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.packageLabels.monthlyEarning, margin + 130, yPos + 8);
-  doc.setFontSize(18);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(34, 139, 34);
-  doc.text(`$${calculateMonthlyIncome(miningHubPlan.package.dailyCredit)}`, margin + 130, yPos + 18);
-
-  yPos += 40;
-
-  // Referral System
-  checkPageBreak(40);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.referralTitle, margin, yPos);
-  yPos += 10;
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-  doc.text(
-    `${miningHubPlan.pdfCopy.referralText}${miningHubPlan.referral.directReward}`,
-    margin,
-    yPos
-  );
-  yPos += 15;
-
-  // Level Income
-  checkPageBreak(50);
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.levelIncomeTitle, margin, yPos);
-  yPos += 10;
-
-  // Level income table
-  const levelBoxWidth = 30;
-  const levelBoxHeight = 20;
-  let xPos = margin;
-
-  miningHubPlan.levelIncome.forEach((level, idx) => {
-    if (xPos + levelBoxWidth > pageWidth - margin) {
-      xPos = margin;
-      yPos += levelBoxHeight + 5;
-      checkPageBreak(levelBoxHeight + 5);
-    }
-
-    doc.setFillColor(245, 245, 245);
-    doc.rect(xPos, yPos, levelBoxWidth, levelBoxHeight, 'F');
-    doc.setDrawColor(200, 200, 200);
-    doc.rect(xPos, yPos, levelBoxWidth, levelBoxHeight);
-
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text(
-      `${miningHubPlan.pdfCopy.levelLabel} ${level.level}`,
-      xPos + levelBoxWidth / 2,
-      yPos + 7,
-      { maxWidth: levelBoxWidth - 4 } as any
+  // Check if jsPDF is available
+  if (!window.jspdf) {
+    throw new Error(
+      "jsPDF library is not loaded. Please check your internet connection and try again.",
     );
+  }
 
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 139, 34);
-    doc.text(`${level.percentage}%`, xPos + levelBoxWidth / 2, yPos + 15, {
-      maxWidth: levelBoxWidth - 4,
-    } as any);
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-    xPos += levelBoxWidth + 5;
-  });
+    // Load images (with fallback to empty strings)
+    const images = await loadPdfImageAssets();
 
-  yPos += levelBoxHeight + 15;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const contentWidth = pageWidth - 2 * margin;
+    let yPos = margin;
 
-  // Team Rewards
-  checkPageBreak(80);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.teamRewardsTitle, margin, yPos);
-  yPos += 10;
+    // Helper function to add new page if needed
+    const checkPageBreak = (requiredSpace: number) => {
+      if (yPos + requiredSpace > pageHeight - margin) {
+        doc.addPage();
+        yPos = margin;
+        return true;
+      }
+      return false;
+    };
 
-  // Team rewards table
-  miningHubPlan.teamRewards.forEach((reward) => {
-    checkPageBreak(12);
+    // Helper function to add text with word wrap
+    const addWrappedText = (text: string, fontSize: number, isBold = false) => {
+      doc.setFontSize(fontSize);
+      doc.setFont("helvetica", isBold ? "bold" : "normal");
+      const lines = doc.splitTextToSize(text, contentWidth);
+      const lineHeight = fontSize * 0.5;
+
+      // biome-ignore lint/complexity/noForEach: jsPDF internal API requires forEach
+      lines.forEach((line: string) => {
+        checkPageBreak(lineHeight);
+        doc.text(line, margin, yPos);
+        yPos += lineHeight;
+      });
+    };
+
+    // Title
+    doc.setFillColor(59, 130, 246);
+    doc.rect(0, 0, pageWidth, 40, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.name, pageWidth / 2, 20, { align: "center" });
+    doc.setFontSize(12);
+    doc.text(miningHubPlan.tagline, pageWidth / 2, 30, { align: "center" });
+
+    yPos = 50;
+    doc.setTextColor(0, 0, 0);
+
+    // Add hero images if available
+    if (images.cryptoMiningImage) {
+      checkPageBreak(60);
+      try {
+        doc.addImage(
+          images.cryptoMiningImage,
+          "PNG",
+          margin,
+          yPos,
+          contentWidth / 2 - 5,
+          50,
+        );
+      } catch (error) {
+        console.warn("Failed to add crypto mining image to PDF:", error);
+      }
+    }
+    if (images.blockchainDevImage) {
+      try {
+        doc.addImage(
+          images.blockchainDevImage,
+          "PNG",
+          pageWidth / 2 + 5,
+          yPos,
+          contentWidth / 2 - 5,
+          50,
+        );
+      } catch (error) {
+        console.warn("Failed to add blockchain dev image to PDF:", error);
+      }
+    }
+    yPos += 60;
+
+    // About Section
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.aboutTitle, margin + 5, yPos + 7);
+    yPos += 15;
+
+    addWrappedText(miningHubPlan.description, 10);
+    yPos += 5;
+
+    // Services Section
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.servicesTitle, margin + 5, yPos + 7);
+    yPos += 15;
+
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.services.forEach((service) => {
+      checkPageBreak(10);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`• ${service}`, margin + 5, yPos);
+      yPos += 6;
+    });
+    yPos += 5;
+
+    // Benefits Section
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.benefitsTitle, margin + 5, yPos + 7);
+    yPos += 15;
+
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.benefits.forEach((benefit) => {
+      checkPageBreak(10);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`• ${benefit}`, margin + 5, yPos);
+      yPos += 6;
+    });
+    yPos += 5;
+
+    // Crypto Mining Explainer Section
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.cryptoMiningExplainer.title, margin + 5, yPos + 7);
+    yPos += 15;
+
+    // What is Mining
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      miningHubPlan.cryptoMiningExplainer.whatIsMining.title,
+      margin + 5,
+      yPos,
+    );
+    yPos += 7;
+    addWrappedText(
+      miningHubPlan.cryptoMiningExplainer.whatIsMining.content,
+      10,
+    );
+    yPos += 5;
+
+    // How it Works
+    checkPageBreak(20);
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      miningHubPlan.cryptoMiningExplainer.howItWorks.title,
+      margin + 5,
+      yPos,
+    );
+    yPos += 7;
+
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.cryptoMiningExplainer.howItWorks.points.forEach((point) => {
+      checkPageBreak(10);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(`• ${point}`, contentWidth - 10);
+      // biome-ignore lint/complexity/noForEach: jsPDF iteration
+      lines.forEach((line: string) => {
+        checkPageBreak(6);
+        doc.text(line, margin + 5, yPos);
+        yPos += 6;
+      });
+    });
+    yPos += 5;
+
+    // Investment Package
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.packageTitle, margin + 5, yPos + 7);
+    yPos += 15;
+
+    checkPageBreak(30);
     doc.setFillColor(250, 250, 250);
-    doc.rect(margin, yPos, contentWidth, 10, 'F');
-    doc.setDrawColor(220, 220, 220);
-    doc.rect(margin, yPos, contentWidth, 10);
+    doc.rect(margin, yPos, contentWidth, 25, "F");
+    doc.setDrawColor(200, 200, 200);
+    doc.rect(margin, yPos, contentWidth, 25);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      `${miningHubPlan.pdfCopy.packageLabels.singlePackage} $${miningHubPlan.package.amount}`,
+      margin + 5,
+      yPos + 7,
+    );
 
     doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
+    doc.setFont("helvetica", "normal");
     doc.text(
-      `${reward.teamSize} ${miningHubPlan.pdfCopy.teamRewardsLabels.members}`,
+      `${miningHubPlan.pdfCopy.packageLabels.dailyCredit} $${miningHubPlan.package.dailyCredit}`,
       margin + 5,
-      yPos + 6.5
+      yPos + 14,
     );
 
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(34, 139, 34);
+    const monthlyEarning = (miningHubPlan.package.dailyCredit * 30).toFixed(2);
     doc.text(
-      `$${reward.monthlyReward} ${miningHubPlan.pdfCopy.teamRewardsLabels.perMonth}`,
-      pageWidth - margin - 50,
-      yPos + 6.5
+      `${miningHubPlan.pdfCopy.packageLabels.monthlyEarning} $${monthlyEarning}`,
+      margin + 5,
+      yPos + 20,
     );
 
-    yPos += 12;
-  });
+    yPos += 30;
 
-  yPos += 10;
+    // Referral System
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.referralTitle, margin + 5, yPos + 7);
+    yPos += 15;
 
-  // Deposit & Withdrawal
-  checkPageBreak(40);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.depositWithdrawalTitle, margin, yPos);
-  yPos += 10;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `${miningHubPlan.pdfCopy.referralText}${miningHubPlan.referral.directReward}`,
+      margin + 5,
+      yPos,
+    );
+    yPos += 10;
 
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text(miningHubPlan.pdfCopy.depositMethodLabel, margin, yPos);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-  doc.text(miningHubPlan.deposit.method, margin + 40, yPos);
-  yPos += 10;
+    // Level Income
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.levelIncomeTitle, margin + 5, yPos + 7);
+    yPos += 15;
 
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.withdrawalFeaturesLabel, margin, yPos);
-  yPos += 7;
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.levelIncome.forEach((level) => {
+      checkPageBreak(10);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(
+        `• ${miningHubPlan.pdfCopy.levelLabel} ${level.level}: ${level.percentage}%`,
+        margin + 5,
+        yPos,
+      );
+      yPos += 6;
+    });
+    yPos += 5;
 
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  miningHubPlan.withdrawal.features.forEach((feature) => {
-    checkPageBreak(7);
-    doc.setTextColor(34, 139, 34);
-    doc.text('•', margin + 2, yPos);
-    doc.setTextColor(60, 60, 60);
-    doc.text(feature, margin + 7, yPos);
+    // Team Rewards
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.teamRewardsTitle, margin + 5, yPos + 7);
+    yPos += 15;
+
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.teamRewards.forEach((reward) => {
+      checkPageBreak(10);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(
+        `• ${reward.teamSize} ${miningHubPlan.pdfCopy.teamRewardsLabels.members}: $${reward.monthlyReward} ${miningHubPlan.pdfCopy.teamRewardsLabels.perMonth}`,
+        margin + 5,
+        yPos,
+      );
+      yPos += 6;
+    });
+    yPos += 5;
+
+    // Deposit and Withdrawal
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      miningHubPlan.pdfCopy.depositWithdrawalTitle,
+      margin + 5,
+      yPos + 7,
+    );
+    yPos += 15;
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `${miningHubPlan.pdfCopy.depositMethodLabel} ${miningHubPlan.deposit.method}`,
+      margin + 5,
+      yPos,
+    );
+    yPos += 8;
+
+    doc.text(
+      `${miningHubPlan.pdfCopy.withdrawalFeaturesLabel}`,
+      margin + 5,
+      yPos,
+    );
     yPos += 6;
-  });
 
-  yPos += 10;
+    // biome-ignore lint/complexity/noForEach: jsPDF iteration
+    miningHubPlan.withdrawal.features.forEach((feature) => {
+      checkPageBreak(10);
+      doc.text(`• ${feature}`, margin + 10, yPos);
+      yPos += 6;
+    });
+    yPos += 5;
 
-  // Income Calculator
-  checkPageBreak(50);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(0, 0, 0);
-  doc.text(miningHubPlan.pdfCopy.incomeCalculatorTitle, margin, yPos);
-  yPos += 10;
+    // Income Calculator Example
+    checkPageBreak(20);
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margin, yPos, contentWidth, 10, "F");
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(miningHubPlan.pdfCopy.incomeCalculatorTitle, margin + 5, yPos + 7);
+    yPos += 15;
 
-  doc.setFillColor(255, 250, 240);
-  doc.rect(margin, yPos, contentWidth, 35, 'F');
-  doc.setDrawColor(34, 139, 34);
-  doc.rect(margin, yPos, contentWidth, 35);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(
+      `${miningHubPlan.pdfCopy.incomeCalculatorLabels.investment} $${miningHubPlan.package.amount}`,
+      margin + 5,
+      yPos,
+    );
+    yPos += 6;
+    doc.text(
+      `${miningHubPlan.pdfCopy.incomeCalculatorLabels.dailyEarning} $${miningHubPlan.package.dailyCredit}`,
+      margin + 5,
+      yPos,
+    );
+    yPos += 6;
+    doc.text(
+      `${miningHubPlan.pdfCopy.incomeCalculatorLabels.monthlyEarning} $${monthlyEarning}`,
+      margin + 5,
+      yPos,
+    );
+    yPos += 8;
 
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(60, 60, 60);
-  doc.text(
-    `${miningHubPlan.pdfCopy.incomeCalculatorLabels.investment} $${miningHubPlan.package.amount}`,
-    margin + 5,
-    yPos + 8
-  );
-  doc.text(
-    `${miningHubPlan.pdfCopy.incomeCalculatorLabels.dailyEarning} $${miningHubPlan.package.dailyCredit}`,
-    margin + 5,
-    yPos + 16
-  );
-  doc.text(
-    `${miningHubPlan.pdfCopy.incomeCalculatorLabels.monthlyEarning} $${calculateMonthlyIncome(miningHubPlan.package.dailyCredit)}`,
-    margin + 5,
-    yPos + 24
-  );
+    addWrappedText(miningHubPlan.pdfCopy.incomeCalculatorNote, 9);
+    yPos += 5;
 
-  yPos += 40;
+    // Footer
+    const totalPages = doc.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(
+        `${miningHubPlan.pdfCopy.footerGenerated} | Page ${i} of ${totalPages}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: "center" },
+      );
+    }
 
-  doc.setFontSize(9);
-  doc.setTextColor(100, 100, 100);
-  doc.text(miningHubPlan.pdfCopy.incomeCalculatorNote, margin, yPos, { maxWidth: contentWidth });
-
-  // Footer
-  yPos = pageHeight - 15;
-  doc.setFontSize(9);
-  doc.setTextColor(150, 150, 150);
-  doc.text(`© ${new Date().getFullYear()} ${miningHubPlan.name}. All rights reserved.`, margin, yPos);
-  doc.text(miningHubPlan.pdfCopy.footerGenerated, pageWidth - margin - 60, yPos);
-
-  return doc.output('blob');
+    return doc.output("blob");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    throw new Error("Failed to generate PDF. Please try again.");
+  }
 }
